@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.pg_audioemitter.extensions.toByteString
+import com.example.pg_audioemitter.extensions.toDisplayStr
 import com.google.protobuf.ByteString
 import com.tminus1010.tmcommonkotlin.logz.logz
 import com.tminus1010.tmcommonkotlin_rx.observe
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         get() = ByteString.copyFrom(collected)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        logz("!*!*! START")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupClickListeners()
@@ -35,14 +38,15 @@ class MainActivity : AppCompatActivity() {
             audioEmitter.start {
                 it.logx("aaa")
                 collected.add(it)
-//                collected.logx("bbb")
             }
             // # Stop after some time
             Observable.just(Unit)
                 .delay(2, TimeUnit.SECONDS)
                 .observe(this) {
                     audioEmitter.stop()
-                    logz("audioEmitter.stop(). size=${collectedByteString.size()} collectedByteString:$collectedByteString")
+                    logz("audioEmitter.stop()")
+                    logz("collected:${collected}")
+                    logz("ByteString.copyFrom(collected):${collected.toByteString().toDisplayStr()}")
                 }
         }
         btn_2.setOnClickListener {
