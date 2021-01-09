@@ -52,4 +52,8 @@ dependencies {
     implementation 'com.tminus1010.tmcommonkotlin:tmcommonkotlin-rx:1.0.30'
     implementation 'com.tminus1010.tmcommonkotlin:tmcommonkotlin-misc:1.0.30'
     implementation 'com.tminus1010.tmcommonkotlin:tmcommonkotlin-tuple:1.0.30'
+
+    // # Rx
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.7'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 }
