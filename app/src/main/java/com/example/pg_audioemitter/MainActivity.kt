@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             }
             // # Stop after some time
             Observable.just(Unit)
-                .delay(5, TimeUnit.SECONDS)
+                .delay(2, TimeUnit.SECONDS)
                 .observe(this) {
                     audioEmitter.stop()
                     logz("audioEmitter.stop(). size=${collectedByteString.size()} collectedByteString:$collectedByteString")
