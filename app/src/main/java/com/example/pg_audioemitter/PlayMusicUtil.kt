@@ -1,20 +1,25 @@
 package com.example.pg_audioemitter
 
 import android.media.MediaPlayer
+import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class PlayMusicUtil {
-    val mediaPlayer = MediaPlayer()
-    private fun playMP3ByteArray(mp3SoundByteArray: ByteArray, cacheDir: File) {
+    private val mediaPlayer = MediaPlayer()
+    fun playMP3ByteArray(activity: AppCompatActivity, mp3SoundByteArray: ByteArray) {
+        playMP3ByteArray(mp3SoundByteArray, activity.cacheDir)
+    }
+
+    fun playMP3ByteArray(mp3SoundByteArray: ByteArray, cacheDir: File) {
         // # Create temp file
         val tempMp3 = File.createTempFile("kurchina", "mp3", cacheDir)
-                .apply { deleteOnExit() }
+            .apply { deleteOnExit() }
         // # Write to temp file
         FileOutputStream(tempMp3)
-                .apply { write(mp3SoundByteArray) }
-                .apply { close() }
+            .apply { write(mp3SoundByteArray) }
+            .apply { close() }
 
         // # MediaPlayer is finicky. Reset it to be sure that everything works.
         // * If you're not using the main thread, you might need to create another MediaPlayer on that thread.
