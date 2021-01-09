@@ -17,8 +17,6 @@ class MainActivity : AppCompatActivity() {
     val audioEmitter by lazy { AudioEmitter() }
     val playMusicUtil by lazy { PlayMusicUtil() }
     var collected = arrayListOf<ByteString>()
-    val collectedByteString
-        get() = ByteString.copyFrom(collected)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         logz("!*!*! START")
@@ -45,13 +43,13 @@ class MainActivity : AppCompatActivity() {
                 .observe(this) {
                     audioEmitter.stop()
                     logz("audioEmitter.stop()")
-                    logz("collected:${collected}")
-                    logz("ByteString.copyFrom(collected):${collected.toByteString().toDisplayStr()}")
+                    logz("collected:${collected.drop(1)}")
+                    logz("ByteString.copyFrom(collected):${collected.drop(1).toByteString().toDisplayStr()}")
                 }
         }
         btn_2.setOnClickListener {
             // # Play Audio
-            playMusicUtil.playMP3ByteArray(this, collectedByteString.toByteArray())
+            playMusicUtil.playMP3ByteArray(this, collected.toByteString().toByteArray())
         }
     }
 }
