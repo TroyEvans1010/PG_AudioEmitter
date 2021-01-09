@@ -49,8 +49,7 @@ class AudioEmitter {
         // stream bytes as they become available in chunks equal to the buffer size
         mAudioExecutor!!.scheduleAtFixedRate({
             // read audio data
-            val read = mAudioRecorder!!.read(
-                mBuffer, 0, mBuffer.size, AudioRecord.READ_BLOCKING)
+            val read = mAudioRecorder!!.read(mBuffer, 0, mBuffer.size, AudioRecord.READ_BLOCKING)
 
             // send next chunk
             if (read > 0) {
