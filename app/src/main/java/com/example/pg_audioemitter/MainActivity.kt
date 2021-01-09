@@ -32,6 +32,16 @@ class MainActivity : AppCompatActivity() {
                 requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO),200)
                 return@setOnClickListener
             }
+            // # Permissions 2
+            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),201)
+                return@setOnClickListener
+            }
+            // # Permissions 3
+            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),202)
+                return@setOnClickListener
+            }
             // # Start Recording
             audioEmitter.start {
                 it.logx("aaa")
