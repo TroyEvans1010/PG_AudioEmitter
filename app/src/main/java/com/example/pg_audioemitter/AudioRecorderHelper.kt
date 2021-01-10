@@ -2,35 +2,39 @@ package com.example.pg_audioemitter
 
 import android.media.*
 import android.util.Log
+import com.tminus1010.tmcommonkotlin.logz.logz
 import io.reactivex.rxjava3.core.Observable
 import java.io.*
 import java.util.concurrent.TimeUnit
 
 
-class AudioRecorderHelper {
+class AudioRecorderHelper(val cacheDir: File) {
     val encoding: Int = AudioFormat.ENCODING_PCM_16BIT
     val channel: Int = AudioFormat.CHANNEL_IN_MONO
     val sampleRate: Int = 16000
-    val AUDIO_FORMAT = AudioFormat.Builder()
-        .setEncoding(encoding)
-        .setSampleRate(sampleRate)
-        .setChannelMask(channel)
-        .build()
-        .describeContents()
+//    val AUDIO_FORMAT = AudioFormat.Builder()
+//        .setEncoding(encoding)
+//        .setSampleRate(sampleRate)
+//        .setChannelMask(channel)
+//        .build()
+//        .describeContents()
+    val AUDIO_FORMAT = encoding
     val FREQUENCY = sampleRate
 
     val fileName: String = "tyjyujfghfgh" //getTempFilename()
 
     var recording = false
 
-    private fun startRecording() {
+    val tempFile2 by lazy {
+        File.createTempFile("pioupuiopuiop", "file", cacheDir)
+//            .apply { deleteOnExit() }
+            .logx("ddd")
+    }
+
+
+    fun startRecording() {
         val CHANNELCONFIG: Int = AudioFormat.CHANNEL_IN_MONO
-        var os: OutputStream? = null
-        try {
-            os = FileOutputStream(fileName)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        }
+        val os: OutputStream = FileOutputStream(tempFile2)
         val bufferSize = AudioRecord.getMinBufferSize(FREQUENCY, CHANNELCONFIG, AUDIO_FORMAT)
         val audioRecord = AudioRecord(
             MediaRecorder.AudioSource.MIC,
@@ -61,11 +65,12 @@ class AudioRecorderHelper {
         } catch (io: IOException) {
             io.printStackTrace()
         }
+        logz("Recording done")
     }
 
     fun playRecording() {
         try {
-            val inputStream = FileInputStream(fileName)
+            val inputStream = FileInputStream(tempFile2)
 
             // sampleRateInHz: 44100
             val minBufferSize: Int = AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
@@ -89,5 +94,6 @@ class AudioRecorderHelper {
         } catch(e: IOException) {
             Log.e("TMLog","IO Exception");
         }
+        logz("Playback done")
     }
 }
