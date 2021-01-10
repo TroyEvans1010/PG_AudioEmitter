@@ -66,12 +66,12 @@ class MainActivity : AppCompatActivity() {
         btn_3.setOnClickListener {
             toast("HasMic: ${hasMicrophone()}")
         }
+        btn_4.setOnClickListener {
+            logz("${FileInputStream(tempMp3).bufferedReader().readLine()}")
+        }
     }
 
     fun hasMicrophone(): Boolean {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_MICROPHONE)
-    }
-
-    private fun setupClickListeners() {
     }
 }
