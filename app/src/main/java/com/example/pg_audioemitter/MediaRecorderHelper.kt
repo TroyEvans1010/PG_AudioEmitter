@@ -6,7 +6,7 @@ import java.io.FileDescriptor
 import java.util.concurrent.TimeUnit
 
 class MediaRecorderHelper(val mediaRecorder: MediaRecorder = MediaRecorder()) {
-    fun getRecordObservable(outputFileDescriptor: FileDescriptor): Observable<Unit> {
+    fun recordObservable(outputFileDescriptor: FileDescriptor): Observable<Unit> {
         return Observable.just(Unit)
             .doOnNext {
                 mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)

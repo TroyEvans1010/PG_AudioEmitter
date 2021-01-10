@@ -3,7 +3,6 @@ package com.example.pg_audioemitter
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pg_audioemitter.extensions.toastAndLog
 import com.tminus1010.tmcommonkotlin.logz.logz
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            MediaRecorderHelper().getRecordObservable(FileOutputStream(tempMp3).fd)
+            MediaRecorderHelper().recordObservable(FileOutputStream(tempMp3).fd)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     toastAndLog("Successful recording complete")
