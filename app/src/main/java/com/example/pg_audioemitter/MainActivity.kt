@@ -3,11 +3,14 @@ package com.example.pg_audioemitter
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.FileUtils
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.pg_audioemitter.extensions.toByteArray
 import com.example.pg_audioemitter.extensions.toDisplayStr
 import com.example.pg_audioemitter.extensions.toastAndLog
 import com.example.pg_audioemitter.model_app.AudioEmitterResult
+import com.example.pg_audioemitter.model_app.AudioHeader
 import com.tminus1010.tmcommonkotlin.logz.logz
 import com.tminus1010.tmcommonkotlin.misc.toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -57,9 +60,13 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     toastAndLog("Successful recording old-way complete")
+//                    logz("AudioHeader:${AudioHeader.create(tempMp3.toByteArray())}")
                     btn_2.isEnabled = true
                 })
-                { toastAndLog("Recording encountered error") }
+                {
+                    toast("Recording encountered error")
+                    Log.e("TMLog","TM`Recording encountered error:", it)
+                }
 
         }
         btn_1.setOnClickListener {
@@ -87,6 +94,9 @@ class MainActivity : AppCompatActivity() {
                             toast("Successful recording complete")
                             logz("Successful recording complete. Combined:${it.combinedByteString.toDisplayStr()}")
                             tempMp3.writeBytes(it.combinedByteString.toByteArray())
+                            val header = it.combinedByteString.toByteArray().take(44)
+                            logz("header:$header")
+
                             // * I think this^ is not enough - it also needs a header, which idk how to make.
                             btn_2.isEnabled = true
                         }
@@ -95,7 +105,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 })
-                { toastAndLog("Recording encountered error") }
+                {
+                    toast("Recording encountered error")
+                    Log.e("TMLog","TM`Recording encountered error:", it)
+                }
         }
         btn_2.setOnClickListener {
             // # Play Audio
@@ -111,7 +124,16 @@ class MainActivity : AppCompatActivity() {
             toastAndLog("HasMic: ${hasMicrophone()}")
         }
         btn_4.setOnClickListener {
-            logz(FileInputStream(tempMp3).bufferedReader().readLine())
+            val byteArray = tempMp3.toByteArray()
+            val header = byteArray.take(44)
+            val headerPlus = byteArray.take(440)
+            val lastBit = byteArray.takeLast(44)
+            logz("header:$header")
+            logz("headerPlus:$headerPlus")
+            logz("lastBit:$lastBit")
+
+//            logz(FileInputStream(tempMp3)  .bufferedReader().readLine())
+//            logz(FileInputStream(tempMp3).bufferedReader().readLine())
         }
     }
 
