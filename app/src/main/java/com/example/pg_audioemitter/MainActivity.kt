@@ -3,6 +3,7 @@ package com.example.pg_audioemitter
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pg_audioemitter.extensions.toDisplayStr
 import com.example.pg_audioemitter.extensions.toastAndLog
@@ -86,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                             toast("Successful recording complete")
                             logz("Successful recording complete. Combined:${it.combinedByteString.toDisplayStr()}")
                             tempMp3.writeBytes(it.combinedByteString.toByteArray())
+                            // * I think this^ is not enough - it also needs a header, which idk how to make.
                             btn_2.isEnabled = true
                         }
                         is AudioEmitterResult.AudioChunk -> {
@@ -100,7 +102,10 @@ class MainActivity : AppCompatActivity() {
             playMusicUtil.playObservable(tempMp3)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Successful play complete")})
-                { toastAndLog("play encountered error") }
+                {
+                    toast("Play encountered error")
+                    Log.e("TMLog","TM`Play encountered error:", it)
+                }
         }
         btn_3.setOnClickListener {
             toastAndLog("HasMic: ${hasMicrophone()}")
