@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.pg_audioemitter.extensions.toastAndLog
 import com.tminus1010.tmcommonkotlin.logz.logz
 import com.tminus1010.tmcommonkotlin.misc.toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -61,7 +62,9 @@ class MainActivity : AppCompatActivity() {
         }
         btn_2.setOnClickListener {
             // # Play Audio
-            playMusicUtil.initializeMediaPlayer(FileInputStream(tempMp3).fd)
+            playMusicUtil.playObservable(tempMp3)
+                .subscribe({ toastAndLog("Successful play complete")})
+                { toastAndLog("play encountered error") }
         }
         btn_3.setOnClickListener {
             toast("HasMic: ${hasMicrophone()}")

@@ -5,6 +5,8 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import com.tminus1010.tmcommonkotlin.logz.logz
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.io.File
 import java.io.FileDescriptor
 import java.io.FileInputStream
@@ -12,7 +14,7 @@ import java.io.FileOutputStream
 
 
 class PlayMusicUtil {
-//    private val mediaPlayer = MediaPlayer()
+    //    private val mediaPlayer = MediaPlayer()
     fun playMP3ByteArray(activity: AppCompatActivity, mp3SoundByteArray: ByteArray) {
         playMP3ByteArray(mp3SoundByteArray, activity.cacheDir)
     }
@@ -66,6 +68,31 @@ class PlayMusicUtil {
         mediaPlayer.prepare().logx("ccc")
         mediaPlayer.start().logx("ddd")
         mediaPlayer.setOnCompletionListener { logz("MediaPlayer completed audio") }
+    }
+
+    val onCompletionSubject = PublishSubject.create<MediaPlayer>()
+
+    fun playObservable(file: File): Observable<Unit> {
+        return Observable.just(file)
+            .map {
+                MediaPlayer()
+                    .apply {
+                        setAudioAttributes(
+                            AudioAttributes.Builder()
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .setLegacyStreamType(AudioManager.STREAM_MUSIC)
+                                .build()
+                        )
+                        setDataSource(FileInputStream(it).fd)
+                        setOnCompletionListener { onCompletionSubject.onNext(this) }
+                        prepare()
+                        start()
+                    }
+            }
+            .flatMap { x -> onCompletionSubject.map { Pair(x, it) } }
+            .filter { (a, b) -> a === b }
+            .map { (a, _) -> a.release() }
     }
 
 
