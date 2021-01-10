@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.pg_audioemitter.extensions.toDisplayStr
 import com.example.pg_audioemitter.extensions.toastAndLog
 import com.example.pg_audioemitter.model_app.AudioEmitterResult
 import com.tminus1010.tmcommonkotlin.logz.logz
@@ -82,11 +83,11 @@ class MainActivity : AppCompatActivity() {
                 .subscribe({
                     when (it) {
                         is AudioEmitterResult.Done -> {
-                            toastAndLog("Successful recording complete")
+                            toastAndLog("Successful recording complete. Combined:${it.combinedByteString.toDisplayStr()}")
                             btn_2.isEnabled = true
                         }
                         is AudioEmitterResult.AudioChunk -> {
-                            logz("Got audio chunk:${it.byteString}")
+                            logz("Got audio chunk:${it.byteString.toDisplayStr()}")
                         }
                     }
                 })

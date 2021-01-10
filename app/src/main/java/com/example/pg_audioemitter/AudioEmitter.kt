@@ -5,6 +5,7 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
+import com.example.pg_audioemitter.extensions.toByteString
 import com.example.pg_audioemitter.model_app.AudioEmitterResult
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -26,17 +27,22 @@ class AudioEmitter {
     private var mAudioExecutor: ScheduledExecutorService? = null
     private lateinit var mBuffer: ByteArray
 
-    val audioChunkPublisher = PublishSubject.create<ByteString>()
-
     fun recordObservable(long: Long, timeUnit: TimeUnit): Observable<AudioEmitterResult> {
+        val audioChunkPublisher = PublishSubject.create<ByteString>()
+        val arrayList = ArrayList<ByteString>()
         return Observable.merge(
-            Observable.just(AudioEmitterResult.Done)
-                .doOnNext { start { audioChunkPublisher.onNext(it) } }
+            Observable.just(Unit)
+                .doOnNext {
+                    arrayList.clear() // is this necessary?
+                    start { audioChunkPublisher.onNext(it) }
+                }
                 .delay(long, timeUnit)
-                .doOnNext { stop() },
+                .doOnNext { stop() }
+                .map { AudioEmitterResult.Done(arrayList.toByteString()) },
             audioChunkPublisher
+                .doOnNext { arrayList.add(it) }
                 .map { AudioEmitterResult.AudioChunk(it) }
-            )
+        )
     }
 
     /** Start streaming  */
@@ -52,11 +58,13 @@ class AudioEmitter {
         // Note: ensure settings are match the speech recognition config
         mAudioRecorder = AudioRecord.Builder()
             .setAudioSource(MediaRecorder.AudioSource.MIC)
-            .setAudioFormat(AudioFormat.Builder()
-                .setEncoding(encoding)
-                .setSampleRate(sampleRate)
-                .setChannelMask(channel)
-                .build())
+            .setAudioFormat(
+                AudioFormat.Builder()
+                    .setEncoding(encoding)
+                    .setSampleRate(sampleRate)
+                    .setChannelMask(channel)
+                    .build()
+            )
             .build()
         mBuffer = ByteArray(2 * AudioRecord.getMinBufferSize(sampleRate, channel, encoding))
 
