@@ -34,5 +34,17 @@
         android:layout_height="wrap_content"
         android:text="Print Something" />
 
+    <Button
+        android:id="@+id/btn_5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="To File, From File" />
+
+    <Button
+        android:id="@+id/btn_6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get Header Bytes" />
+
 
 </LinearLayout>
