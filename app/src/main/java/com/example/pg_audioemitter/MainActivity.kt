@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             toast("HasMic: ${hasMicrophone()}")
         }
         btn_4.setOnClickListener {
-            logz("${FileInputStream(tempMp3).bufferedReader().readLine()}")
+            logz(FileInputStream(tempMp3).bufferedReader().readLine())
         }
     }
 
