@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     val mediaRecorderHelper by lazy { MediaRecorderHelper() }
     val audioEmitter by lazy { AudioEmitter() }
     val playMusicUtil by lazy { PlayMusicUtil() }
-    val playMusicUtil2 by lazy { PlayMusicUtil2() }
+    val playAudioUtil by lazy { PlayAudioUtil() }
     val audioRecorderHelper by lazy { AudioRecorderHelper(cacheDir) }
 
     val tempMp3 by lazy {
@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity() {
         }
         btn_2.setOnClickListener {
             // # Play Audio
-            playMusicUtil2.playObservable(tempFile)
+            playAudioUtil.playObservable(tempFile)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play done") })
                 {

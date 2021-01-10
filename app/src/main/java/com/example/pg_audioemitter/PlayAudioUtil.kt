@@ -6,7 +6,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.*
 
 
-class PlayMusicUtil2 {
+class PlayAudioUtil {
     fun play(tempFile: File) {
         val minBufferSize =
             AudioTrack.getMinBufferSize(
