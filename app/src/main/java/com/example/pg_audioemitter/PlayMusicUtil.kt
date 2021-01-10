@@ -70,6 +70,28 @@ class PlayMusicUtil {
         mediaPlayer.setOnCompletionListener { logz("MediaPlayer completed audio") }
     }
 
+    fun playObservable(byteArray: ByteArray, cacheDir: File): Observable<Unit> {
+        // # Create temp file
+        val tempMp3 = File.createTempFile("kurchina", "mp3", cacheDir)
+            .apply { deleteOnExit() }.logx("aaa")
+        // # Write to temp file
+        FileOutputStream(tempMp3)
+            .apply { write(byteArray) }
+//            .apply {
+//                WriteWaveFileHeader(
+//                    this,
+//                    1920,
+//                    1920,
+//                    16000,
+//                    1,
+//                    16000 * 2
+//                )
+//            }
+            .apply { close() }
+
+        return playObservable(tempMp3)
+    }
+
     val onCompletionSubject = PublishSubject.create<MediaPlayer>()
 
     fun playObservable(file: File): Observable<Unit> {
