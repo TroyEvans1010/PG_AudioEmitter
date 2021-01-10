@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         btn_2.setOnClickListener {
             // # Play Audio
             playMusicUtil.playObservable(tempMp3)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Successful play complete")})
                 { toastAndLog("play encountered error") }
         }
