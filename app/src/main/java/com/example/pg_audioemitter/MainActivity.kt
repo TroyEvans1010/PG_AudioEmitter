@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     val mediaRecorderHelper by lazy { MediaRecorderHelper() }
     val audioEmitter by lazy { AudioEmitter() }
     val playMusicUtil by lazy { PlayMusicUtil() }
+    val playMusicUtil2 by lazy { PlayMusicUtil2() }
     val audioRecorderHelper by lazy { AudioRecorderHelper(cacheDir) }
 
     val tempMp3 by lazy {
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // # initialize view
-//        btn_2.isEnabled = false
+        btn_2.isEnabled = false
         // # Setup Click Listeners
         btn_0.setOnClickListener {
             // # Permissions
@@ -88,39 +89,39 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            audioRecorderHelper
-                .startRecording()
-
-
-//            audioEmitter.recordObservable(3, TimeUnit.SECONDS)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe({
-//                    when (it) {
-//                        is AudioEmitterResult.Done -> {
-//                            toast("Successful recording complete")
-//                            logz("Successful recording complete. Combined:${it.combinedByteString.toDisplayStr()}")
-//                            tempMp3.writeBytes(it.combinedByteString.toByteArray())
-//                            // * I think this^ is not enough - it also needs a header, which idk how to make.
+            audioEmitter.recordObservable(3, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    when (it) {
+                        is AudioEmitterResult.Done -> {
+                            toast("Recording done")
+                            logz("Recording done. Combined:${it.combinedByteString.toDisplayStr()}")
+                            tempFile.writeBytes(it.combinedByteString.toByteArray())
+                            // * I think this^ is not enough - it also needs a header, which idk how to make.
 //                            val header = it.combinedByteString.toByteArray().take(44)
 //                            logz("header:$header")
-//
-//                            btn_2.isEnabled = true
-//                        }
-//                        is AudioEmitterResult.AudioChunk -> {
-//                            logz("Audio Chunk:${it.byteString.toDisplayStr()}")
-//                        }
-//                    }
-//                })
-//                {
-//                    toast("Recording encountered error")
-//                    Log.e("TMLog", "TM`Recording encountered error:", it)
-//                }
+                            btn_2.isEnabled = true
+                        }
+                        is AudioEmitterResult.AudioChunk -> {
+                            logz("Audio Chunk:${it.byteString.toDisplayStr()}")
+                        }
+                    }
+                })
+                {
+                    toast("Recording encountered error")
+                    Log.e("TMLog", "TM`Recording encountered error:", it)
+                }
         }
         btn_2.setOnClickListener {
             // # Play Audio
-            audioRecorderHelper.playRecording()
-
-//            playMusicUtil.playObservable(tempMp3)
+            playMusicUtil2.playObservable(tempFile)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ toastAndLog("Play done") })
+                {
+                    toast("Play encountered error")
+                    Log.e("TMLog", "TM`Play encountered error:", it)
+                }
+//            playMusicUtil.playObservable(tempFile)
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe({ toastAndLog("Successful play complete") })
 //                {
