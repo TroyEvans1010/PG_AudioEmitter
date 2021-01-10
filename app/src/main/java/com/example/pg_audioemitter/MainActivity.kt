@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             mediaRecorderHelper.recordObservable(FileOutputStream(tempMp3).fd)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    toastAndLog("Successful recording complete")
+                    toastAndLog("Successful recording old-way complete")
                     btn_2.isEnabled = true
                 })
                 { toastAndLog("Recording encountered error") }
