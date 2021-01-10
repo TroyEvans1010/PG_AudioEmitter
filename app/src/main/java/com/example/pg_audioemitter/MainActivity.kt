@@ -16,6 +16,7 @@ import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+    val mediaRecorderHelper by lazy { MediaRecorderHelper() }
     val audioEmitter by lazy { AudioEmitter() }
     val playMusicUtil by lazy { PlayMusicUtil() }
 
@@ -33,6 +34,32 @@ class MainActivity : AppCompatActivity() {
         // # initialize view
         btn_2.isEnabled = false
         // # Setup Click Listeners
+        btn_0.setOnClickListener {
+            // # Permissions
+            if(checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 200)
+                return@setOnClickListener
+            }
+            // # Permissions 2
+            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 201)
+                return@setOnClickListener
+            }
+            // # Permissions 3
+            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 202)
+                return@setOnClickListener
+            }
+            //
+            mediaRecorderHelper.recordObservable(FileOutputStream(tempMp3).fd)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    toastAndLog("Successful recording complete")
+                    btn_2.isEnabled = true
+                })
+                { toastAndLog("Recording encountered error") }
+
+        }
         btn_1.setOnClickListener {
             // # Permissions
             if(checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
