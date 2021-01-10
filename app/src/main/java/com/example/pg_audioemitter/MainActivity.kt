@@ -83,11 +83,13 @@ class MainActivity : AppCompatActivity() {
                 .subscribe({
                     when (it) {
                         is AudioEmitterResult.Done -> {
-                            toastAndLog("Successful recording complete. Combined:${it.combinedByteString.toDisplayStr()}")
+                            toast("Successful recording complete")
+                            logz("Successful recording complete. Combined:${it.combinedByteString.toDisplayStr()}")
+                            tempMp3.writeBytes(it.combinedByteString.toByteArray())
                             btn_2.isEnabled = true
                         }
                         is AudioEmitterResult.AudioChunk -> {
-                            logz("Got audio chunk:${it.byteString.toDisplayStr()}")
+                            logz("Audio Chunk:${it.byteString.toDisplayStr()}")
                         }
                     }
                 })
@@ -101,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 { toastAndLog("play encountered error") }
         }
         btn_3.setOnClickListener {
-            toast("HasMic: ${hasMicrophone()}")
+            toastAndLog("HasMic: ${hasMicrophone()}")
         }
         btn_4.setOnClickListener {
             logz(FileInputStream(tempMp3).bufferedReader().readLine())
