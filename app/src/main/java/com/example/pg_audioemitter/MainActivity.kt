@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     val tempMp3 by lazy {
         File.createTempFile("kurchina", "mp3", cacheDir)
-            .apply { deleteOnExit() }.logx("aaa")
+            .apply { deleteOnExit() }
+            .logx("aaa")
     }
 
 
@@ -51,14 +52,10 @@ class MainActivity : AppCompatActivity() {
             MediaRecorderHelper().getRecordObservable(FileOutputStream(tempMp3).fd)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    logz("Successful recording complete")
-                    toast("Successful recording complete")
+                    toastAndLog("Successful recording complete")
                     btn_2.isEnabled = true
                 })
-                {
-                    Log.d("TMLog", "TM`Recording encountered error:", it)
-                    toast("Recording encountered error")
-                }
+                { toastAndLog("Recording encountered error") }
         }
         btn_2.setOnClickListener {
             // # Play Audio
