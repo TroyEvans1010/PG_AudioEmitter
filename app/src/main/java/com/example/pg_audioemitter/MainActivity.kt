@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pg_audioemitter.extensions.toastAndLog
+import com.example.pg_audioemitter.model_app.AudioEmitterResult
 import com.tminus1010.tmcommonkotlin.logz.logz
 import com.tminus1010.tmcommonkotlin.misc.toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -12,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     val audioEmitter by lazy { AudioEmitter() }
@@ -48,11 +50,18 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            MediaRecorderHelper().recordObservable(FileOutputStream(tempMp3).fd)
+            audioEmitter.recordObservable(3, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    toastAndLog("Successful recording complete")
-                    btn_2.isEnabled = true
+                    when (it) {
+                        is AudioEmitterResult.Done -> {
+                            toastAndLog("Successful recording complete")
+                            btn_2.isEnabled = true
+                        }
+                        is AudioEmitterResult.AudioChunk -> {
+                            logz("Got audio chunk:${it.byteString}")
+                        }
+                    }
                 })
                 { toastAndLog("Recording encountered error") }
         }

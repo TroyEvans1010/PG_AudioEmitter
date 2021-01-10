@@ -5,10 +5,14 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
+import com.example.pg_audioemitter.model_app.AudioEmitterResult
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import com.google.protobuf.ByteString
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 /**
  * AudioEmitter feeds audio from the mic into a subscriber function.
@@ -21,6 +25,19 @@ class AudioEmitter {
     private var mAudioRecorder: AudioRecord? = null
     private var mAudioExecutor: ScheduledExecutorService? = null
     private lateinit var mBuffer: ByteArray
+
+    val audioChunkPublisher = PublishSubject.create<ByteString>()
+
+    fun recordObservable(long: Long, timeUnit: TimeUnit): Observable<AudioEmitterResult> {
+        return Observable.merge(
+            Observable.just(AudioEmitterResult.Done)
+                .doOnNext { start { audioChunkPublisher.onNext(it) } }
+                .delay(long, timeUnit)
+                .doOnNext { stop() },
+            audioChunkPublisher
+                .map { AudioEmitterResult.AudioChunk(it) }
+            )
+    }
 
     /** Start streaming  */
     fun start(
