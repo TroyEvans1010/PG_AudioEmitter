@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            mediaRecorderHelper.recordObservable(FileOutputStream(tempMp3).fd)
+            mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     toastAndLog("Successful recording old-way complete")
@@ -110,6 +110,16 @@ class MainActivity : AppCompatActivity() {
                 {
                     toast("Recording encountered error")
                     Log.e("TMLog", "TM`Recording encountered error:", it)
+                }
+        }
+        btn_1_5.setOnClickListener {
+            // # Play Audio Old Way
+            playMusicUtil.playObservable(tempFile)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ toastAndLog("Play Old Way done") })
+                {
+                    toast("Play Old Way encountered error")
+                    Log.e("TMLog", "TM`Play Old Way encountered error:", it)
                 }
         }
         btn_2.setOnClickListener {
