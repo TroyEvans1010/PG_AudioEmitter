@@ -53,7 +53,7 @@ class PlayMusicUtil {
 //        mediaPlayer.start()
     }
 
-    private fun initializeMediaPlayer(fileDescriptor: FileDescriptor) {
+    fun initializeMediaPlayer(fileDescriptor: FileDescriptor) {
         val mediaPlayer = MediaPlayer().logx("bbb")
         mediaPlayer.setAudioAttributes(
             AudioAttributes.Builder()
@@ -65,6 +65,7 @@ class PlayMusicUtil {
         mediaPlayer.setDataSource(fileDescriptor)
         mediaPlayer.prepare().logx("ccc")
         mediaPlayer.start().logx("ddd")
+        mediaPlayer.setOnCompletionListener { logz("MediaPlayer completed audio") }
     }
 
 
