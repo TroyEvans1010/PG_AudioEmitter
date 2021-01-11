@@ -18,6 +18,8 @@ class PlayAudioUtil {
     }
 
     private fun playBytes(file: File) {
+        val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
+        val FREQUENCY = 16000
         val minBufferSize =
             AudioTrack.getMinBufferSize(
                 FREQUENCY,
