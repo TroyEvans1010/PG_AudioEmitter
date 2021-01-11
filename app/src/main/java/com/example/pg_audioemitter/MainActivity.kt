@@ -63,7 +63,6 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     toastAndLog("Successful recording old-way complete")
-//                    logz("AudioHeader:${AudioHeader.create(tempMp3.toByteArray())}")
                     btn_2.isEnabled = true
                 })
                 {
@@ -113,8 +112,8 @@ class MainActivity : AppCompatActivity() {
                 }
         }
         btn_1_5.setOnClickListener {
-            // # Play Audio Old Way
-            playMusicUtil.playObservable(tempFile)
+            // # Play Audio MP3
+            playAudioUtil.playObservable(tempFile, PlayAudioUtil.Type.MP3)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play Old Way done") })
                 {
@@ -123,21 +122,14 @@ class MainActivity : AppCompatActivity() {
                 }
         }
         btn_2.setOnClickListener {
-            // # Play Audio
-            playAudioUtil.playObservable(tempFile)
+            // # Play Audio Bytes
+            playAudioUtil.playObservable(tempFile, PlayAudioUtil.Type.Bytes)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play done") })
                 {
                     toast("Play encountered error")
                     Log.e("TMLog", "TM`Play encountered error:", it)
                 }
-//            playMusicUtil.playObservable(tempFile)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe({ toastAndLog("Successful play complete") })
-//                {
-//                    toast("Play encountered error")
-//                    Log.e("TMLog", "TM`Play encountered error:", it)
-//                }
         }
         btn_3.setOnClickListener {
             toastAndLog("HasMic: ${hasMicrophone()}")
