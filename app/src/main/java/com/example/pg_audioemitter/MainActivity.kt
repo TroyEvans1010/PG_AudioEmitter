@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
     val mediaRecorderHelper by lazy { MediaRecorderHelper() }
     val audioEmitter by lazy { AudioEmitter() }
-    val playMusicUtil by lazy { PlayMusicUtil() }
     val playAudioUtil by lazy { PlayAudioUtil() }
     val audioRecorderHelper by lazy { AudioRecorderHelper(cacheDir) }
 
