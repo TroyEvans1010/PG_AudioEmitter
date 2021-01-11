@@ -25,15 +25,13 @@ class MainActivity : AppCompatActivity() {
             encoding = AudioFormat.ENCODING_PCM_16BIT,
         )
     }
-    val audioEmitter by lazy { AudioEmitter(partialAudioFormat) }
-    val playAudioUtil by lazy { PlayAudioUtil() }
-
     val tempFile by lazy {
         File.createTempFile("rtyerty", "file", cacheDir)
             .apply { deleteOnExit() }
             .logx("ppp")
     }
-    var bytes: ByteArray?= null
+    val audioEmitter by lazy { AudioEmitter(partialAudioFormat) }
+    val playAudioUtil by lazy { PlayAudioUtil() }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 3, TimeUnit.SECONDS)
+            mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 2, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     toastAndLog("Successful recording old-way complete")
@@ -89,14 +87,12 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            audioEmitter.recordObservable(3, TimeUnit.SECONDS)
+            audioEmitter.recordObservable(2, TimeUnit.SECONDS, tempFile)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     when (it) {
                         is AudioEmitterResult.Done -> {
-                            toast("Recording done")
-                            logz("Recording done. Combined:${it.combinedByteString.toDisplayStr()}")
-                            bytes = it.combinedByteString.toByteArray()
+                            toastAndLog("Recording done")
                             btn_2.isEnabled = true
                         }
                         is AudioEmitterResult.AudioChunk -> {
@@ -121,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         }
         btn_2.setOnClickListener {
             // # Play Audio Bytes
-            playAudioUtil.playBytesObservable(bytes!!, cacheDir, partialAudioFormat)
+            playAudioUtil.playBytesObservable(tempFile, partialAudioFormat)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play done") })
                 {

@@ -11,7 +11,9 @@ import com.example.pg_audioemitter.model_app.AudioEmitterResult
 import com.example.pg_audioemitter.model_app.PartialAudioFormat
 import com.google.protobuf.ByteString
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.PublishSubject
+import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -27,27 +29,25 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
     private var mAudioRecorder: AudioRecord? = null
     private var mAudioExecutor: ScheduledExecutorService? = null
     private lateinit var mBuffer: ByteArray
+    var disposable: Disposable? = null
 
-    fun recordObservable(long: Long, timeUnit: TimeUnit): Observable<AudioEmitterResult> {
+    fun recordObservable(long: Long, timeUnit: TimeUnit, outputFile: File?= null): Observable<AudioEmitterResult> {
+        outputFile?.writeBytes(ByteArray(0))
         val audioChunkPublisher = PublishSubject.create<ByteString>()
-        val arrayList = ArrayList<ByteString>()
+            .also { disposable = it.subscribe { outputFile?.appendBytes(it.toByteArray()) } }
         return Observable.merge(
             Observable.just(Unit)
-                .doOnNext {
-                    arrayList.clear() // is this necessary?
-                    start { audioChunkPublisher.onNext(it) }
-                }
+                .doOnNext { start { audioChunkPublisher.onNext(it) } }
                 .delay(long, timeUnit)
                 .doOnNext { stop() }
-                .map { AudioEmitterResult.Done(arrayList.toByteString()) },
+                .map { AudioEmitterResult.Done },
             audioChunkPublisher
-                .doOnNext { arrayList.add(it) }
                 .map { AudioEmitterResult.AudioChunk(it) }
         )
     }
 
     /** Start streaming  */
-    fun start(subscriber: (ByteString) -> Unit) {
+    private fun start(subscriber: (ByteString) -> Unit) {
         mAudioExecutor = Executors.newSingleThreadScheduledExecutor()
         val audioFormat = AudioFormat.Builder()
             .setEncoding(partialAudioFormat.encoding)
@@ -79,7 +79,7 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
     }
 
     /** Stop Streaming  */
-    fun stop() {
+    private fun stop() {
         // stop events
         mAudioExecutor?.shutdown()
         mAudioExecutor = null
@@ -88,5 +88,8 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
         mAudioRecorder?.stop()
         mAudioRecorder?.release()
         mAudioRecorder = null
+
+        //
+        disposable?.dispose()
     }
 }
