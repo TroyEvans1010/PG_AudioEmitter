@@ -2,11 +2,13 @@ package com.example.pg_audioemitter
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.AudioFormat
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pg_audioemitter.extensions.*
 import com.example.pg_audioemitter.model_app.AudioEmitterResult
+import com.example.pg_audioemitter.model_app.PartialAudioFormat
 import com.tminus1010.tmcommonkotlin.logz.logz
 import com.tminus1010.tmcommonkotlin.misc.toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -17,15 +19,15 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     val mediaRecorderHelper by lazy { MediaRecorderHelper() }
-    val audioEmitter by lazy { AudioEmitter() }
+    val partialAudioFormat by lazy {
+        PartialAudioFormat(
+            sampleRate = AudioFormat.ENCODING_PCM_16BIT,
+            encoding = 16000
+        )
+    }
+    val audioEmitter by lazy { AudioEmitter(partialAudioFormat) }
     val playAudioUtil by lazy { PlayAudioUtil() }
     val audioRecorderHelper by lazy { AudioRecorderHelper(cacheDir) }
-
-    val tempMp3 by lazy {
-        File.createTempFile("kurchina", "mp3", cacheDir)
-            .apply { deleteOnExit() }
-            .logx("aaa")
-    }
 
     val tempFile by lazy {
         File.createTempFile("rtyerty", "file", cacheDir)
@@ -95,9 +97,6 @@ class MainActivity : AppCompatActivity() {
                             toast("Recording done")
                             logz("Recording done. Combined:${it.combinedByteString.toDisplayStr()}")
                             tempFile.writeBytes(it.combinedByteString.toByteArray())
-                            // * I think this^ is not enough - it also needs a header, which idk how to make.
-//                            val header = it.combinedByteString.toByteArray().take(44)
-//                            logz("header:$header")
                             btn_2.isEnabled = true
                         }
                         is AudioEmitterResult.AudioChunk -> {
@@ -122,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
         btn_2.setOnClickListener {
             // # Play Audio Bytes
-            playAudioUtil.playBytesObservable(tempFile)
+            playAudioUtil.playBytesObservable(tempFile, partialAudioFormat)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play done") })
                 {
@@ -161,7 +160,7 @@ class MainActivity : AppCompatActivity() {
             tempFile.toByteArray().toSpecialStr().logx("ttt")
         }
         btn_6.setOnClickListener {
-            tempMp3.toByteArray().toSpecialStr().logx("rrr")
+            tempFile.toByteArray().toSpecialStr().logx("rrr")
         }
     }
 

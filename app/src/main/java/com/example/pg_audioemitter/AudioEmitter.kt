@@ -1,26 +1,27 @@
 package com.example.pg_audioemitter
 
-import androidx.annotation.RequiresApi
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
+import androidx.annotation.RequiresApi
+import com.example.pg_audioemitter.extensions.getAudioRecordMinBufferSize
 import com.example.pg_audioemitter.extensions.toByteString
 import com.example.pg_audioemitter.model_app.AudioEmitterResult
+import com.example.pg_audioemitter.model_app.PartialAudioFormat
+import com.google.protobuf.ByteString
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-import com.google.protobuf.ByteString
-import io.reactivex.rxjava3.annotations.NonNull
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
 
 /**
  * AudioEmitter feeds audio from the mic into a subscriber function.
  * It is from: https://github.com/GoogleCloudPlatform/android-docs-samples
  */
 @RequiresApi(Build.VERSION_CODES.M) // AudioRecord requires SDK 23+
-class AudioEmitter {
+class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
     val TAG = AudioEmitter::class.java.simpleName
 
     private var mAudioRecorder: AudioRecord? = null
@@ -46,27 +47,21 @@ class AudioEmitter {
     }
 
     /** Start streaming  */
-    fun start(
-        encoding: Int = AudioFormat.ENCODING_PCM_16BIT,
-        channel: Int = AudioFormat.CHANNEL_IN_MONO,
-        sampleRate: Int = 16000,
-        subscriber: (ByteString) -> Unit
-    ) {
+    fun start(subscriber: (ByteString) -> Unit) {
         mAudioExecutor = Executors.newSingleThreadScheduledExecutor()
+        val audioFormat = AudioFormat.Builder()
+            .setEncoding(partialAudioFormat.encoding)
+            .setSampleRate(partialAudioFormat.sampleRate)
+            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+            .build()
 
         // create and configure recorder
         // Note: ensure settings are match the speech recognition config
         mAudioRecorder = AudioRecord.Builder()
             .setAudioSource(MediaRecorder.AudioSource.MIC)
-            .setAudioFormat(
-                AudioFormat.Builder()
-                    .setEncoding(encoding)
-                    .setSampleRate(sampleRate)
-                    .setChannelMask(channel)
-                    .build()
-            )
+            .setAudioFormat(audioFormat)
             .build()
-        mBuffer = ByteArray(2 * AudioRecord.getMinBufferSize(sampleRate, channel, encoding))
+        mBuffer = ByteArray(2 * audioFormat.getAudioRecordMinBufferSize())
 
         // start!
         mAudioRecorder!!.startRecording()
