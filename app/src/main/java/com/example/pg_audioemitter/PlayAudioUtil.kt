@@ -43,30 +43,47 @@ class PlayAudioUtil {
         audioTrack.release()
     }
 
+
+    /**
+     * @param partialAudioFormat should be shared with Recorder object
+     */
     fun playBytesObservable(file: File, partialAudioFormat: PartialAudioFormat): Observable<Unit> {
         return Observable.just(file)
             .observeOn(Schedulers.computation())
             .map { playBytes(it, partialAudioFormat) }
     }
 
+    /**
+     * This overload is not usually recommended because bytes can become excessively large, and
+     * a lack of RAM will be an issue. Writing to and reading from a file is the standard pattern.
+     *
+     * @param partialAudioFormat should be shared with Recorder object
+     */
+    fun playBytesObservable(bytes: ByteArray, cacheDir: File, partialAudioFormat: PartialAudioFormat): Observable<Unit> {
+        return File.createTempFile("playBytesObservable", "file", cacheDir)
+            .apply { deleteOnExit() }
+            .apply { writeBytes(bytes) }
+            .let { playBytesObservable(it, partialAudioFormat) }
+    }
+
     private val onCompletionSubject = PublishSubject.create<MediaPlayer>()
 
     fun playMP3Observable(file: File): Observable<Unit> {
-        return Observable.just(file)
+        return Observable.just(Unit)
             .map {
                 MediaPlayer()
-                    .apply {
-                        setAudioAttributes(
+                    .also { mediaPlayer ->
+                        mediaPlayer.setAudioAttributes(
                             AudioAttributes.Builder()
                                 .setUsage(AudioAttributes.USAGE_MEDIA)
                                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                                 .setLegacyStreamType(AudioManager.STREAM_MUSIC)
                                 .build()
                         )
-                        setDataSource(FileInputStream(it).fd)
-                        setOnCompletionListener { onCompletionSubject.onNext(this) }
-                        prepare()
-                        start()
+                        mediaPlayer.setDataSource(FileInputStream(file).fd)
+                        mediaPlayer.setOnCompletionListener { onCompletionSubject.onNext(mediaPlayer) }
+                        mediaPlayer.prepare()
+                        mediaPlayer.start()
                     }
             }
             .flatMap { x -> onCompletionSubject.map { Pair(x, it) } }

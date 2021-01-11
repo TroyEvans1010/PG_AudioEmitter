@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
             .apply { deleteOnExit() }
             .logx("ppp")
     }
+    var bytes: ByteArray?= null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                         is AudioEmitterResult.Done -> {
                             toast("Recording done")
                             logz("Recording done. Combined:${it.combinedByteString.toDisplayStr()}")
-                            tempFile.writeBytes(it.combinedByteString.toByteArray())
+                            bytes = it.combinedByteString.toByteArray()
                             btn_2.isEnabled = true
                         }
                         is AudioEmitterResult.AudioChunk -> {
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
         btn_2.setOnClickListener {
             // # Play Audio Bytes
-            playAudioUtil.playBytesObservable(tempFile, partialAudioFormat)
+            playAudioUtil.playBytesObservable(bytes!!, cacheDir, partialAudioFormat)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play done") })
                 {
