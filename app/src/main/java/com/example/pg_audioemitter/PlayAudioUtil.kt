@@ -39,6 +39,7 @@ class PlayAudioUtil {
             audioTrack.write(audioData,0, dataSize)
             dataSize = inputStream.read(audioData)
         }
+        audioTrack.stop()
         audioTrack.release()
     }
 

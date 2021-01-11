@@ -21,13 +21,12 @@ class MainActivity : AppCompatActivity() {
     val mediaRecorderHelper by lazy { MediaRecorderHelper() }
     val partialAudioFormat by lazy {
         PartialAudioFormat(
-            sampleRate = AudioFormat.ENCODING_PCM_16BIT,
-            encoding = 16000
+            sampleRate = 16000,
+            encoding = AudioFormat.ENCODING_PCM_16BIT,
         )
     }
     val audioEmitter by lazy { AudioEmitter(partialAudioFormat) }
     val playAudioUtil by lazy { PlayAudioUtil() }
-    val audioRecorderHelper by lazy { AudioRecorderHelper(cacheDir) }
 
     val tempFile by lazy {
         File.createTempFile("rtyerty", "file", cacheDir)
@@ -60,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd)
+            mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 3, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     toastAndLog("Successful recording old-way complete")
