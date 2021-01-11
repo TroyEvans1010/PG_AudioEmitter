@@ -8,25 +8,25 @@
         android:id="@+id/btn_0"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Record Old Way" />
+        android:text="Record As MP3" />
 
     <Button
         android:id="@+id/btn_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Record" />
+        android:text="Record As Bytes" />
 
     <Button
         android:id="@+id/btn_1_5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Play Audio Old Way" />
+        android:text="Play Audio As MP3" />
 
     <Button
         android:id="@+id/btn_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Play Audio" />
+        android:text="Play Audio As Bytes" />
 
     <Button
         android:id="@+id/btn_3"
