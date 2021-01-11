@@ -8,15 +8,6 @@ import java.io.*
 
 
 class PlayAudioUtil {
-    enum class Type { MP3, Bytes }
-
-    fun playObservable(file: File, type: Type): Observable<Unit> {
-        return when (type) {
-            Type.MP3 -> playMP3Observable(file)
-            Type.Bytes -> playBytesObservable(file)
-        }
-    }
-
     private fun playBytes(file: File) {
         val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
         val FREQUENCY = 16000
@@ -56,7 +47,7 @@ class PlayAudioUtil {
         audioTrack.release()
     }
 
-    private fun playBytesObservable(file: File): Observable<Unit> {
+    fun playBytesObservable(file: File): Observable<Unit> {
         return Observable.just(file)
             .observeOn(Schedulers.computation())
             .map { playBytes(it) }
@@ -64,7 +55,7 @@ class PlayAudioUtil {
 
     private val onCompletionSubject = PublishSubject.create<MediaPlayer>()
 
-    private fun playMP3Observable(file: File): Observable<Unit> {
+    fun playMP3Observable(file: File): Observable<Unit> {
         return Observable.just(file)
             .map {
                 MediaPlayer()

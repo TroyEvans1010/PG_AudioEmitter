@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         }
         btn_1_5.setOnClickListener {
             // # Play Audio MP3
-            playAudioUtil.playObservable(tempFile, PlayAudioUtil.Type.MP3)
+            playAudioUtil.playMP3Observable(tempFile)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play Old Way done") })
                 {
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         }
         btn_2.setOnClickListener {
             // # Play Audio Bytes
-            playAudioUtil.playObservable(tempFile, PlayAudioUtil.Type.Bytes)
+            playAudioUtil.playBytesObservable(tempFile)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play done") })
                 {
