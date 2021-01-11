@@ -87,7 +87,8 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             //
-            audioEmitter.recordObservable(2, TimeUnit.SECONDS, tempFile)
+            tempFile.writeBytes(ByteArray(0))
+            audioEmitter.recordObservable(2, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     when (it) {
@@ -96,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                             btn_2.isEnabled = true
                         }
                         is AudioEmitterResult.AudioChunk -> {
+                            tempFile.appendBytes(it.byteString.toByteArray())
                             logz("Audio Chunk:${it.byteString.toDisplayStr()}")
                         }
                     }

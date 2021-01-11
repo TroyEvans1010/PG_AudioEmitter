@@ -29,12 +29,9 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
     private var mAudioRecorder: AudioRecord? = null
     private var mAudioExecutor: ScheduledExecutorService? = null
     private lateinit var mBuffer: ByteArray
-    var disposable: Disposable? = null
 
-    fun recordObservable(long: Long, timeUnit: TimeUnit, outputFile: File?= null): Observable<AudioEmitterResult> {
-        outputFile?.writeBytes(ByteArray(0))
+    fun recordObservable(long: Long, timeUnit: TimeUnit): Observable<AudioEmitterResult> {
         val audioChunkPublisher = PublishSubject.create<ByteString>()
-            .also { disposable = it.subscribe { outputFile?.appendBytes(it.toByteArray()) } }
         return Observable.merge(
             Observable.just(Unit)
                 .doOnNext { start { audioChunkPublisher.onNext(it) } }
@@ -88,8 +85,5 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
         mAudioRecorder?.stop()
         mAudioRecorder?.release()
         mAudioRecorder = null
-
-        //
-        disposable?.dispose()
     }
 }
