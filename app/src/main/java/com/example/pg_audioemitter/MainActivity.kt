@@ -32,9 +32,9 @@ class MainActivity : AppCompatActivity() {
             .logx("ppp")
     }
     val tempFile2 by lazy {
-        File.createTempFile("rtyerty", "file", cacheDir)
+        File.createTempFile("ityuir", "file", cacheDir)
                 .apply { deleteOnExit() }
-                .logx("ppp")
+                .logx("ooo")
     }
     val audioEmitter by lazy { AudioEmitter(partialAudioFormat) }
     val playAudioUtil by lazy { PlayAudioUtil() }
