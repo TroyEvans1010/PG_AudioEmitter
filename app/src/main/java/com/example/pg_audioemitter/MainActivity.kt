@@ -40,18 +40,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // # initialize view
         btn_2.isEnabled = false
+        btn_1_5.isEnabled = false
         // # Setup Click Listeners
         btn_0.setOnClickListener {
             if (doPermissions()) return@setOnClickListener
             mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 2, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    toastAndLog("Successful recording old-way complete")
-                    btn_2.isEnabled = true
+                    toastAndLog("Record MP3 done")
+                    btn_1_5.isEnabled = true
                 })
                 {
-                    toast("Recording encountered error")
-                    Log.e("TMLog", "TM`Recording encountered error:", it)
+                    toast("Record MP3 Error")
+                    Log.e("TMLog", "TM`Record MP3 Error:", it)
                 }
 
         }
@@ -78,23 +79,23 @@ class MainActivity : AppCompatActivity() {
                 }
         }
         btn_1_5.setOnClickListener {
-            // # Play Audio MP3
+            toastAndLog("Play MP3 start")
             playAudioUtil.playMP3Observable(tempFile)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ toastAndLog("Play Old Way done") })
+                .subscribe({ toastAndLog("Play MP3 done") })
                 {
-                    toast("Play Old Way encountered error")
-                    Log.e("TMLog", "TM`Play Old Way encountered error:", it)
+                    toast("Play MP3 Error")
+                    Log.e("TMLog", "TM`Play MP3 Error:", it)
                 }
         }
         btn_2.setOnClickListener {
-            // # Play Audio Bytes
+            toastAndLog("Play Bytes start")
             playAudioUtil.playBytesObservable(tempFile, partialAudioFormat)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ toastAndLog("Play done") })
+                .subscribe({ toastAndLog("Play Bytes done") })
                 {
-                    toast("Play encountered error")
-                    Log.e("TMLog", "TM`Play encountered error:", it)
+                    toast("Play Bytes Error")
+                    Log.e("TMLog", "TM`Play Bytes Error:", it)
                 }
         }
         btn_3.setOnClickListener {
