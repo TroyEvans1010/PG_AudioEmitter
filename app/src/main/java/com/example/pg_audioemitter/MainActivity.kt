@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     val mediaRecorderHelper by lazy { MediaRecorderHelper() }
     val partialAudioFormat by lazy {
         PartialAudioFormat(
-            sampleRate = 16000,
+            sampleRate = 44100,
             encoding = AudioFormat.ENCODING_PCM_16BIT,
         )
     }
