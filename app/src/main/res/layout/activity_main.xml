@@ -5,52 +5,10 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn_0"
+        android:id="@+id/btn_record_and_playback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Record As MP3" />
-
-    <Button
-        android:id="@+id/btn_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Record As Bytes" />
-
-    <Button
-        android:id="@+id/btn_1_5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Play Audio As MP3" />
-
-    <Button
-        android:id="@+id/btn_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Play Audio As Bytes" />
-
-    <Button
-        android:id="@+id/btn_3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Report Has Mic" />
-
-    <Button
-        android:id="@+id/btn_4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Print Something" />
-
-    <Button
-        android:id="@+id/btn_5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="To File, From File" />
-
-    <Button
-        android:id="@+id/btn_6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Get Header Bytes" />
+        android:text="Record And Playback" />
 
 
 </LinearLayout>

@@ -12,6 +12,7 @@ import com.example.pg_audioemitter.model_app.PartialAudioFormat
 import com.tminus1010.tmcommonkotlin.logz.logz
 import com.tminus1010.tmcommonkotlin.misc.toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
@@ -30,6 +31,11 @@ class MainActivity : AppCompatActivity() {
             .apply { deleteOnExit() }
             .logx("ppp")
     }
+    val tempFile2 by lazy {
+        File.createTempFile("rtyerty", "file", cacheDir)
+                .apply { deleteOnExit() }
+                .logx("ppp")
+    }
     val audioEmitter by lazy { AudioEmitter(partialAudioFormat) }
     val playAudioUtil by lazy { PlayAudioUtil() }
 
@@ -38,99 +44,59 @@ class MainActivity : AppCompatActivity() {
         logz("!*!*! START")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // # initialize view
-        btn_2.isEnabled = false
-        btn_1_5.isEnabled = false
         // # Setup Click Listeners
-        btn_0.setOnClickListener {
-            if (doPermissions()) return@setOnClickListener
-            mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 2, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    toastAndLog("Record MP3 done")
-                    btn_1_5.isEnabled = true
-                })
-                {
-                    toast("Record MP3 Error")
-                    Log.e("TMLog", "TM`Record MP3 Error:", it)
-                }
-
-        }
-        btn_1.setOnClickListener {
-            if (doPermissions()) return@setOnClickListener
-            tempFile.writeBytes(ByteArray(0))
-            audioEmitter.recordObservable(2, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    when (it) {
-                        is AudioEmitterResult.Done -> {
-                            toastAndLog("Recording done")
-                            btn_2.isEnabled = true
-                        }
-                        is AudioEmitterResult.AudioChunk -> {
-                            tempFile.appendBytes(it.byteString.toByteArray())
-                            logz("Audio Chunk:${it.byteString.toDisplayStr()}")
-                        }
+        btn_record_and_playback.setOnClickListener {
+            toastAndLog("Record And Playback start")
+            Observable.just(Unit)
+                    .doOnNext { tempFile2.writeBytes(ByteArray(0)) }
+                    .flatMap {
+                        logz("Record start")
+                        audioEmitter.recordObservable(2, TimeUnit.SECONDS)
+                                .doOnNext {
+                                    if (it is AudioEmitterResult.AudioChunk) {
+                                        logz("AudioChunk:${it.byteString.toDisplayStr()}")
+                                        tempFile2.appendBytes(it.byteString.toByteArray())
+                                    }
+                                }
+                                .filter { it is AudioEmitterResult.Done }
+                                .doOnNext { logz("Record done") }
                     }
-                })
-                {
-                    toast("Recording encountered error")
-                    Log.e("TMLog", "TM`Recording encountered error:", it)
-                }
+                    .flatMap {
+                        logz("Playback start")
+                        playAudioUtil.playBytesObservable(tempFile2, partialAudioFormat)
+                                .doOnNext { logz("Playback done") }
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ toastAndLog("Record And Playback done") })
+                    {
+                        toast("Record And Playback Error")
+                        Log.e("TMLog", "TM`Record And Playback Error:", it)
+                    }
         }
-        btn_1_5.setOnClickListener {
-            toastAndLog("Play MP3 start")
-            playAudioUtil.playMP3Observable(tempFile)
+    }
+
+    fun playbackAsMP3() {
+        playAudioUtil.playMP3Observable(tempFile)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ toastAndLog("Play MP3 done") })
                 {
                     toast("Play MP3 Error")
                     Log.e("TMLog", "TM`Play MP3 Error:", it)
                 }
-        }
-        btn_2.setOnClickListener {
-            toastAndLog("Play Bytes start")
-            playAudioUtil.playBytesObservable(tempFile, partialAudioFormat)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ toastAndLog("Play Bytes done") })
-                {
-                    toast("Play Bytes Error")
-                    Log.e("TMLog", "TM`Play Bytes Error:", it)
-                }
-        }
-        btn_3.setOnClickListener {
-            toastAndLog("HasMic: ${hasMicrophone()}")
-        }
-        // # Print Something
-        btn_4.setOnClickListener {
-            // # Byte.toBitStr()
-            17.toByte().toBitStr().logx("yyy")
-            1010.toByte().toBitStr().logx("iii")
-            64.toByte().toBitStr().logx("uuu")
+    }
 
-            // # header
-//            val byteArray = tempMp3.toByteArray()
-//            val header = byteArray.take(44)
-//            val headerPlus = byteArray.take(440)
-//            val lastBit = byteArray.takeLast(44)
-//            logz("header:$header")
-//            logz("headerPlus:$headerPlus")
-//            logz("lastBit:$lastBit")
-        }
-        btn_5.setOnClickListener {
-            val byteArray = byteArrayOf(
-                'd'.toByte(),
-                'a'.toByte(),
-                't'.toByte(),
-                'a'.toByte()
-            )
-            tempFile.writeBytes(byteArray)
-            Thread.sleep(1000)
-            tempFile.toByteArray().toSpecialStr().logx("ttt")
-        }
-        btn_6.setOnClickListener {
-            tempFile.toByteArray().toSpecialStr().logx("rrr")
-        }
+    fun recordAsMP3() {
+        if (doPermissions()) return
+        mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 2, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    toastAndLog("Record MP3 done")
+//                    btn_1_5.isEnabled = true
+                })
+                {
+                    toast("Record MP3 Error")
+                    Log.e("TMLog", "TM`Record MP3 Error:", it)
+                }
     }
 
     fun hasMicrophone(): Boolean {
