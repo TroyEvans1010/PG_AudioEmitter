@@ -42,22 +42,7 @@ class MainActivity : AppCompatActivity() {
         btn_2.isEnabled = false
         // # Setup Click Listeners
         btn_0.setOnClickListener {
-            // # Permissions
-            if(checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 200)
-                return@setOnClickListener
-            }
-            // # Permissions 2
-            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 201)
-                return@setOnClickListener
-            }
-            // # Permissions 3
-            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 202)
-                return@setOnClickListener
-            }
-            //
+            if (doPermissions()) return@setOnClickListener
             mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 2, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -71,22 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         }
         btn_1.setOnClickListener {
-            // # Permissions
-            if(checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 200)
-                return@setOnClickListener
-            }
-            // # Permissions 2
-            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 201)
-                return@setOnClickListener
-            }
-            // # Permissions 3
-            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 202)
-                return@setOnClickListener
-            }
-            //
+            if (doPermissions()) return@setOnClickListener
             tempFile.writeBytes(ByteArray(0))
             audioEmitter.recordObservable(2, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -164,5 +134,22 @@ class MainActivity : AppCompatActivity() {
 
     fun hasMicrophone(): Boolean {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_MICROPHONE)
+    }
+
+    // * very hacky..
+    fun doPermissions(): Boolean {
+        if(checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 200)
+            return true
+        }
+        if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 201)
+            return true
+        }
+        if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 202)
+            return true
+        }
+        return false
     }
 }
