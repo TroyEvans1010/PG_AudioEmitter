@@ -46,17 +46,17 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
     private fun start(subscriber: (ByteString) -> Unit) {
         mAudioExecutor = Executors.newSingleThreadScheduledExecutor()
         val audioFormat = AudioFormat.Builder()
-            .setEncoding(partialAudioFormat.encoding)
-            .setSampleRate(partialAudioFormat.sampleRate)
-            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-            .build()
+                .setEncoding(partialAudioFormat.encoding)
+                .setSampleRate(partialAudioFormat.sampleRate)
+                .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                .build()
 
         // create and configure recorder
         // Note: ensure settings are match the speech recognition config
         mAudioRecorder = AudioRecord.Builder()
-            .setAudioSource(MediaRecorder.AudioSource.MIC)
-            .setAudioFormat(audioFormat)
-            .build()
+                .setAudioSource(MediaRecorder.AudioSource.MIC)
+                .setAudioFormat(audioFormat)
+                .build()
         mBuffer = ByteArray(2 * audioFormat.getAudioRecordMinBufferSize())
 
         // start!
