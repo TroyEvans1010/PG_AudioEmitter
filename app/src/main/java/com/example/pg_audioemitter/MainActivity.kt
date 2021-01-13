@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // # Setup Click Listeners
         btn_record_and_playback.setOnClickListener {
+            if (doPermissions()) return@setOnClickListener
             toastAndLog("Record And Playback start")
             Observable.just(Unit)
                     .doOnNext { tempFile2.writeBytes(ByteArray(0)) }
@@ -74,6 +75,8 @@ class MainActivity : AppCompatActivity() {
                     }
         }
         btn_record_and_playback_mp3.setOnClickListener {
+            if (doPermissions()) return@setOnClickListener
+            toastAndLog("Record And Playback MP3 start")
             Observable.just(Unit)
                     .flatMap {
                         logz("Record MP3 start")
