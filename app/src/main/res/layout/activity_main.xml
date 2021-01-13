@@ -10,5 +10,11 @@
         android:layout_height="wrap_content"
         android:text="Record And Playback" />
 
+    <Button
+        android:id="@+id/btn_record_and_playback_mp3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Record And Playback MP3" />
+
 
 </LinearLayout>

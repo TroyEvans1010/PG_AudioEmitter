@@ -73,6 +73,24 @@ class MainActivity : AppCompatActivity() {
                         Log.e("TMLog", "TM`Record And Playback Error:", it)
                     }
         }
+        btn_record_and_playback_mp3.setOnClickListener {
+            Observable.just(Unit)
+                    .flatMap {
+                        logz("Record MP3 start")
+                        mediaRecorderHelper.recordObservable(FileOutputStream(tempFile).fd, 2, TimeUnit.SECONDS)
+                                .doOnNext { logz("Play MP3 done") }
+                    }
+                    .flatMap {
+                        logz("Playback MP3 start")
+                        playAudioUtil.playMP3Observable(tempFile)
+                    }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ toastAndLog("Record And Playback MP3 done") })
+                    {
+                        toast("Record And Playback MP3 Error")
+                        Log.e("TMLog", "TM`Record And Playback MP3 Error:", it)
+                    }
+        }
     }
 
     fun playbackAsMP3() {
