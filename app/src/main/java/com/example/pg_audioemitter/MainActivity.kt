@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                         audioEmitter.recordObservable(2, TimeUnit.SECONDS)
                                 .doOnNext {
                                     if (it is AudioEmitterResult.AudioChunk) {
-                                        logz("AudioChunk:${it.byteString.toDisplayStr()}")
+//                                        logz("AudioChunk:${it.byteString.toDisplayStr()}")
                                         tempFile2.appendBytes(it.byteString.toByteArray())
                                     }
                                 }

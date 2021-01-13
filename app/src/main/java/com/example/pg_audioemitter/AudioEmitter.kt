@@ -6,9 +6,11 @@ import android.media.MediaRecorder
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.pg_audioemitter.extensions.getAudioRecordMinBufferSize
+import com.example.pg_audioemitter.extensions.toDisplayStr
 import com.example.pg_audioemitter.model_app.AudioEmitterResult
 import com.example.pg_audioemitter.model_app.PartialAudioFormat
 import com.google.protobuf.ByteString
+import com.tminus1010.tmcommonkotlin.logz.logz
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.util.concurrent.Executors
@@ -64,6 +66,7 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
         mAudioExecutor!!.scheduleAtFixedRate({
             // read audio data
             val read = mAudioRecorder!!.read(mBuffer, 0, mBuffer.size, AudioRecord.READ_BLOCKING)
+            logz("AudioChunk as buffer:${mBuffer.toDisplayStr()}")
 
             // send next chunk
             if (read > 0) {
