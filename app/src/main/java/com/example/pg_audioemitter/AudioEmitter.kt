@@ -6,14 +6,11 @@ import android.media.MediaRecorder
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.pg_audioemitter.extensions.getAudioRecordMinBufferSize
-import com.example.pg_audioemitter.extensions.toByteString
 import com.example.pg_audioemitter.model_app.AudioEmitterResult
 import com.example.pg_audioemitter.model_app.PartialAudioFormat
 import com.google.protobuf.ByteString
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.PublishSubject
-import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
