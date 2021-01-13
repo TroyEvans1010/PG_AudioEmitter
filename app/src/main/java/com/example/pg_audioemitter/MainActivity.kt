@@ -51,8 +51,7 @@ class MainActivity : AppCompatActivity() {
             Observable.just(Unit)
                     .doOnNext { tempFile2.writeBytes(ByteArray(0)) }
                     .flatMap {
-                        logz("Record start")
-                        audioEmitter.recordObservable(2, TimeUnit.SECONDS)
+                        audioEmitter.recordObservable(Observable.just(Unit).delay(3, TimeUnit.SECONDS))
                                 .doOnNext {
                                     if (it is AudioEmitterResult.AudioChunk) {
 //                                        logz("AudioChunk:${it.byteString.toDisplayStr()}")

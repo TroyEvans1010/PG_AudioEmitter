@@ -29,16 +29,16 @@ class AudioEmitter(val partialAudioFormat: PartialAudioFormat) {
     private var mAudioExecutor: ScheduledExecutorService? = null
     private lateinit var mBuffer: ByteArray
 
-    fun recordObservable(long: Long, timeUnit: TimeUnit): Observable<AudioEmitterResult> {
+    fun recordObservable(stopObservable: Observable<Unit>): Observable<AudioEmitterResult> {
         val audioChunkPublisher = PublishSubject.create<ByteString>()
         return Observable.merge(
-            Observable.just(Unit)
-                .doOnNext { start { audioChunkPublisher.onNext(it) } }
-                .delay(long, timeUnit)
-                .doOnNext { stop() }
-                .map { AudioEmitterResult.Done },
-            audioChunkPublisher
-                .map { AudioEmitterResult.AudioChunk(it) }
+                Observable.just(Unit)
+                        .doOnNext { start { audioChunkPublisher.onNext(it) } }
+                        .flatMap { stopObservable.take(1) }
+                        .doOnNext { stop() }
+                        .map { AudioEmitterResult.Done },
+                audioChunkPublisher
+                        .map { AudioEmitterResult.AudioChunk(it) }
         )
     }
 
