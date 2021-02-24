@@ -4,17 +4,16 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.concurrent.TimeUnit
 
-fun <T> Observable<T>.endWithItem(item: T): Observable<T> =
-    this
-        .concatWith(Observable.just(item))
+fun <T> Observable<T>.endWithItem(item: T) = this.concatWith(Observable.just(item))
 
-fun <IN, OUT> Observable<IN>.emitIfTimeout(timespan: Long, timeUnit: TimeUnit, item: OUT): Observable<OUT> =
-    this
+fun <IN, OUT> Observable<IN>.emitIfTimeout(timespan: Long, timeUnit: TimeUnit, item: OUT): Observable<OUT> {
+    return this
         .take(1)
         .map { false }
         .timeout(timespan, timeUnit, Observable.just(true))
         .filter { it }
         .map { item }
+}
 
 fun <T> Observable<T>.toBehaviorSubject(): BehaviorSubject<T> {
     return BehaviorSubject.create<T>()
